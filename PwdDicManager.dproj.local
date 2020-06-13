@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.147,C:\PROJECT+\DIC_EDITION\Unit1.dfm=C:\PROJECT+\DIC_EDITION\UFrmFilters.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.147,C:\PROJECT+\DIC_EDITION\Unit1.pas=C:\PROJECT+\DIC_EDITION\UFrmFilters.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.370,=C:\PROJECT+\DIC_EDITION\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.688,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.823,=C:\PROJECT+\DIC_EDITION\Unit2.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.621,C:\PROJECT+\DIC_EDITION\Unit2.pas=C:\PROJECT+\DIC_EDITION\UFrmDic.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.451,C:\PROJECT+\PwdDicManager\DicManager.dproj=C:\PROJECT+\PwdDicManager\PwdDicManager.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.612,C:\PROJECT+\DIC_EDITION\UThrProcDic.pas=C:\PROJECT+\DIC_EDITION\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.354,C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.dfm=C:\PROJECT+\DIC_EDITION\UFrmMain.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.555,=C:\PROJECT+\DIC_EDITION\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.621,C:\PROJECT+\DIC_EDITION\Unit2.dfm=C:\PROJECT+\DIC_EDITION\UFrmDic.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.105,C:\Users\USER\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\PROJECT+\DIC_EDITION\DicEdition.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.504,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.663,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.371,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.624,C:\PROJECT+\DIC_EDITION\DicEdition.dproj=C:\PROJECT+\DIC_EDITION\DicManager.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.354,C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\PROJECT+\DIC_EDITION\UFrmMain.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.553,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.314,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.535,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.585,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.617,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.275,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.128,=C:\Users\USER\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+  </Transactions>
+	<ActiveMobileDevice>
+		<NoProfile iOSSimulator="iPhone5"/>
+	</ActiveMobileDevice>
+</BorlandProject>
