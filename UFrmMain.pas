@@ -1,4 +1,4 @@
-unit UFrmMain;
+﻿unit UFrmMain;
 
 interface
 
@@ -8,9 +8,7 @@ uses
   Vcl.ActnList, Vcl.Menus, Vcl.StdCtrls, sButton, Vcl.ComCtrls, sStatusBar,
   sMemo, Vcl.ExtCtrls, sPanel, sGauge, sComboBoxes, Vcl.Mask, sMaskEdit,
   sCustomComboEdit, sToolEdit, sComboBox, sLabel, sEdit, sGroupBox, TimeFormat,
-  sSpinEdit,
-  //cpu_info_xe,
-  System.RegularExpressions, sCheckBox, sRadioButton,
+  sSpinEdit, System.RegularExpressions, sCheckBox, sRadioButton,
   sListView, System.ImageList, Vcl.ImgList, acImage, System.Win.Registry, Files, GetVer,
   sSplitter, System.StrUtils, System.Math, sSkinProvider;
 
@@ -102,7 +100,7 @@ type
     procedure Act_StartDupleExecute(Sender: TObject);
     procedure BtnStartClick(Sender: TObject);
     procedure TestClick(Sender: TObject);
-    function FiltersCheckerExecute(StrValue: AnsiString): AnsiString;
+    function PassViaFilters(StrValue: AnsiString): AnsiString;
   private
     { Private declarations }
   public
@@ -160,6 +158,7 @@ USES UFrmDic, UFrmFilters;
 
 // UThrProcDic;
 
+{--------------------------------- }
 procedure TFrmMain.Act_StartDupleExecute(Sender: TObject);
 var
   lev1, lev2 : SmallInt;
@@ -307,86 +306,16 @@ begin
         mm.Lines.Add(IntToStr(LProcCount) + ' ' + s_word);
 
         // Processing Filters
-        //With FrmFilters do
-        //begin
-          {
-          // [1] фильтрация по длине
-          if ChBoxRestricLength.Checked then
-          begin
-            if (length(s_word) < SpEdMinLength.Value)
-            or (length(s_word) > SpEdMaxLength.Value) then Continue;
-          end;
+        // Добавляем в список в памяти
+        s_word := PassViaFilters(s_word);
+        if s_word <> '' then
+        begin
+          STout.AddObject(s_word, nil);
+          inc(GAddedCount);
+          inc(LAddedCount);
+        end;
 
-          // [2] Конввертировать по регистру
-          if ChBoxConvertCase.Checked then
-          begin
-            case RdGrpConvertCase.ItemIndex of
-              0: s_word := AnsiLowerCase(s_word);
-              1: s_word := AnsiLowerCase(s_word);
-            end;
-          end;
-
-          // [3] фильтрация по содержанию определенных символов
-          if ChBoxExcludeSymbolsEnabled.Checked then
-          begin
-
-            // Поиск слов которые не содержат символы
-            if RdBtnExcludeSymbolsOf.Checked then
-            begin
-              if EdExcludeSymbolsOf.Text <> '' then
-              begin
-                symbols := EdExcludeSymbolsOf.Text;
-                res := false;
-                for x := 1 to Length(symbols) do
-                begin
-                  if Assigned(StrScan(PAnsiChar(s_word), symbols[x])) then
-                  begin
-                    res := true;
-                    Break;
-                  end;
-                end;
-                if Not res then Continue;
-              end;
-            end;
-
-            // Поиск слов которые содержат символы
-            if RdBtnExcludeSymbolsIn.Checked then
-            begin
-              if EdExcludeSymbolsIn.Text <> '' then
-              begin
-                symbols := EdExcludeSymbolsIn.Text;
-                res := false;
-                for x:=1 to Length(s_word) do
-                begin
-                  if Assigned(StrScan(PAnsiChar(s_word), symbols[x])) then
-                  begin
-                    res := true;
-                    Break;
-                  end;
-                end;
-               if res then Continue;
-              end;
-            end;
-
-          end;
-
-          // [4] фильтрация по содержанию определенных слогов или слов
-          if ChBoxExcludeWords.Checked then
-          begin
-            for x := 0 to mmExcludeWords.Lines.Count -1 do
-            begin
-              res := false;
-              if AnsiPos(mmExcludeWords.Lines[x], s_word) <> 0 then
-              begin
-                res := true;
-                break;
-              end;
-            end;
-            if res then continue;
-          end;
-          }
-
-
+         {
           // Добавляем в список в памяти
           x := STout.Count;
           STout.AddObject(s_word, nil);
@@ -400,23 +329,24 @@ begin
             inc(LDupCount);
             inc(GDupCount);
           end;
-  
-          // Сохраняю часть огромного файла во временный файл 
-          if FileOverSize then 
-            if STout.Count >= 5000000 then 
-            begin 
-              // Увеличиваю массив временных файлов
-              Lev2 := Length(ArrFilesTemp[Lev1 - 1]);
-              SetLength(ArrFilesTemp[lev1 - 1], Lev2 + 1);
-              // Генерирую новое имя для временного файла             
-              FileNameSave := ExtractFileName(LVInp.Items[i].SubItems[lv_file]); 
-              FileNameSave := CreateNameFileOverSize(FileNameSave, Lev2) + '.tmp';             
-              FileNameSave := IncludeTrailingBackslash(DirEditExport.Text) + FileNameSave;
-              STout.SaveToFile(FileNameSave);
-              STout.Clear;                                  
-              // Добавляю в масив имен временных вайлов имя файла              
-              ArrFilesTemp[Lev1 - 1][Lev2] := FileNameSave;               
-            end;
+          }
+
+        // Сохраняю часть огромного файла во временный файл
+        if FileOverSize then
+          if STout.Count >= 5000000 then
+          begin
+            // Увеличиваю массив временных файлов
+            Lev2 := Length(ArrFilesTemp[Lev1 - 1]);
+            SetLength(ArrFilesTemp[lev1 - 1], Lev2 + 1);
+            // Генерирую новое имя для временного файла
+            FileNameSave := ExtractFileName(LVInp.Items[i].SubItems[lv_file]);
+            FileNameSave := CreateNameFileOverSize(FileNameSave, Lev2) + '.tmp';
+            FileNameSave := IncludeTrailingBackslash(DirEditExport.Text) + FileNameSave;
+            STout.SaveToFile(FileNameSave);
+            STout.Clear;
+            // Добавляю в масив имен временных вайлов имя файла
+            ArrFilesTemp[Lev1 - 1][Lev2] := FileNameSave;
+          end;
 
           {
           if (STout.Count = MaxCount[CmBoxMaxCount.ItemIndex])
@@ -433,7 +363,7 @@ begin
             STout.Clear;
           end;
           }
-          
+
         //end; {with}
 
         //if Not START then Break;
@@ -582,6 +512,7 @@ begin
 
 end;
 
+{------------------------------- Act_SearchExecute ----------------------------}
 procedure TFrmMain.Act_SearchExecute(Sender: TObject);
 var
   i,x: integer;
@@ -700,6 +631,7 @@ begin
   end;
 end;
 
+{--------------------------- Act_StartExecute ---------------------------------}
 procedure TFrmMain.Act_StartExecute(Sender: TObject);
 var
   i,j,x: integer;
@@ -1032,11 +964,12 @@ begin
 
 end;
 
+{-------------------------------- Act_StopExecute -----------------------------}
 procedure TFrmMain.Act_StopExecute(Sender: TObject);
 begin
   START := False;
 end;
-
+{--------------------------------- AddLVitem ----------------------------------}
 function TFrmMain.AddLVitem: integer;
 begin
   With LVInp.Items.Add do
@@ -1054,7 +987,7 @@ begin
     Result := Index;
   end;
 end;
-
+{-------------------------------- AddLVout ------------------------------------}
 function TFrmMain.AddLVout: integer;
 begin
   With LVout.Items.Add do
@@ -1068,7 +1001,7 @@ begin
     Result := Index;
   end;
 end;
-
+{---------------------------- ChBoxOneInOneClick ------------------------------}
 procedure TFrmMain.ChBoxOneInOneClick(Sender: TObject);
 begin
   if ChBoxOneInOne.Checked then
@@ -1091,7 +1024,7 @@ begin
   end;
 
 end;
-
+{----------------------------- CreateNameFileOverSize -------------------------}
 function TFrmMain.CreateNameFileOverSize(FileName: String; x: SmallInt): String;
 Var 
   Ext: String;
@@ -1101,6 +1034,7 @@ begin
   Result := copy(FileName, 1, Length(FileName) - Length(Ext)) + '_' + IntToStr(x) + Ext;
 end;
 
+{------------------------------ DigitalDesing ---------------------------------}
 function TFrmMain.DigitalDesing(strDigitalValue: string): string;
 var i: SmallInt;
     s: AnsiString;
@@ -1122,8 +1056,8 @@ begin
   Result := AnsiReverseString(Result);
   Result := Trim(Result);
 end;
-
-function TFrmMain.FiltersCheckerExecute(StrValue: AnsiString): AnsiString;
+{-------------------------- FiltersCheckerExecute -----------------------------}
+function TFrmMain.PassViaFilters(StrValue: AnsiString): AnsiString;
 var
   symbols: AnsiString;
   rslt   : Boolean;
@@ -1215,7 +1149,7 @@ begin
   Result := StrValue;
 
 end;
-
+{-------------------------------- FormCreate ----------------------------------}
 procedure TFrmMain.FormCreate(Sender: TObject);
 var SysInfo: TSystemInfo;
 begin
@@ -1239,7 +1173,7 @@ begin
   //GSTinp.Duplicates    := dupError;
 
 end;
-
+{--------------------------- GetExportFileName --------------------------------}
 function TFrmMain.GetExportFileName(MaskLen, x: integer): String;
 var
   msk: string;
@@ -1254,7 +1188,7 @@ begin
             + EdExportFileDic.Text + CmBoxSuffix.Text + msk
             + strExtArray[CmBoxFileExt.ItemIndex];
 end;
-
+{----------------------------- GetMaskLength ----------------------------------}
 function TFrmMain.GetMaskLength: integer;
 var
   i: SmallInt;
@@ -1273,7 +1207,7 @@ begin
   Result := length(IntToStr(wd_sum div MaxCount[CmBoxMaxCount.ItemIndex])) + 1;
 
 end;
-
+{------------------------------ GetProcessorName ------------------------------}
 function TFrmMain.GetProcessorName: string;
 var reg: TRegistry;
 begin
@@ -1289,7 +1223,7 @@ begin
     reg.Free;
   end;
 end;
-
+{------------------------------- LockControls ---------------------------------}
 procedure TFrmMain.LockControls(LockStatus: TLockCtrls; Sender: TObject);
 var
   status: boolean;
@@ -1324,21 +1258,23 @@ begin
 
 end;
 
+{----------------------------- MM_DictionaryClick -----------------------------}
 procedure TFrmMain.MM_DictionaryClick(Sender: TObject);
 begin
   FrmDic.ShowModal;
 end;
-
+{--------------------------------- MM_ExitClick -------------------------------}
 procedure TFrmMain.MM_ExitClick(Sender: TObject);
 begin
   Close;
 end;
-
+{-------------------------------- MM_FiltersShowClick -------------------------}
 procedure TFrmMain.MM_FiltersShowClick(Sender: TObject);
 begin
   FrmFilters.ShowModal;
 end;
 
+{-------------------------------- BtnStartClick -------------------------------}
 procedure TFrmMain.BtnStartClick(Sender: TObject);
 begin
 
@@ -1370,6 +1306,7 @@ begin
 
 end;
 
+{------------------------------ TestClick -------------------------------------}
 procedure TFrmMain.TestClick(Sender: TObject);
 var sz: Int64;
   STOut: TStringList;
@@ -1419,6 +1356,7 @@ begin
   
 end;
 
+{-------------------------------- TmrGetStatusTimer ---------------------------}
 procedure TFrmMain.TmrGetStatusTimer(Sender: TObject);
 var s_temp: string;
 begin

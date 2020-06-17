@@ -1,4 +1,4 @@
-unit UFrmDic;
+﻿unit UFrmDic;
 
 interface
 
@@ -28,11 +28,18 @@ type
     StatusBar: TsStatusBar;
     PM_Delete: TMenuItem;
     PM_Spliter: TMenuItem;
+    PM_OneUp: TMenuItem;
+    PM_OneDown: TMenuItem;
+    PM_PageUp: TMenuItem;
+    PM_PageDown: TMenuItem;
+    PM_Spliter2: TMenuItem;
     procedure BtnAddClick(Sender: TObject);
     procedure SaveDicList;
     procedure LoadDicList;
     function AddItems: Integer;
-    procedure GetCoutDic(X: Integer);
+    function InsertItem(x: integer): Integer;
+    procedure CopyItem(Dest, Source: SmallInt);
+    procedure GetCountDic(X: Integer);
     procedure FormCreate(Sender: TObject);
     procedure BtnAllDeleteClick(Sender: TObject);
     procedure PM_CheckedSelectedClick(Sender: TObject);
@@ -45,6 +52,10 @@ type
     function DigitalDesing(strDigitalValue: string): string;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure PM_DeleteClick(Sender: TObject);
+    procedure PM_PageDownClick(Sender: TObject);
+    procedure PM_OneUpClick(Sender: TObject);
+    procedure PM_OneDownClick(Sender: TObject);
+    procedure PM_PageUpClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -73,19 +84,18 @@ implementation
 USES UFrmMain;
 
 function TFrmDic.AddItems: Integer;
+var
+  i: ShortInt;
 begin
   with LVDic.Items.Add do
   begin
     Caption    := '';
     Checked    := true;
     ImageIndex := -1;
-    Caption := IntToStr(Index + 1);
-    SubItems.Add('');
-    SubItems.Add('');
-    SubItems.Add('');
-    SubItems.Add('');
+    Caption    := IntToStr(Index + 1);
+    for i := 1 to 4 do SubItems.Add('');
     SubItemImages[0] := 0;
-    Result  := Index;
+    Result     := Index;
   end;
 end;
 
@@ -125,7 +135,7 @@ begin
     LVDic.Items[x].SubItems[dlv_file] := OpenDialog.Files[i];
     LVDic.Items[x].SubItems[dlv_sz]   := GetFileSizeFormat(OpenDialog.Files[i]);
     // ileIndict.Caption             := ''
-    GetCoutDic(X);
+    GetCountDic(X);
     //LVDic.Items[x].SubItems[dlv_cnt]  := DigitalDesing(IntToStr(GetCoutDic(OpenDialog.Files[i])));
 
     LVDic.Items[x].SubItems[dlv_stat] := strArrDicStats[dsExistes];
@@ -157,7 +167,20 @@ procedure TFrmDic.BtnUpdateClick(Sender: TObject);
 begin
   UpDateStatus;
 end;
-
+{----------------------------- CopyItem ---------------------------------------}
+procedure TFrmDic.CopyItem(Dest, Source: SmallInt);
+var
+  i: ShortInt;
+begin
+  With LVDic do
+  begin
+    Items[Dest].Checked := Items[Source].Checked;
+    Items[Dest].Caption := Items[Source].Caption;
+    for i:=0 to Items[Source].SubItems.Count -1 do
+      Items[Dest].SubItems[i] := Items[Source].SubItems[i];
+  end;
+end;
+{------------------------------ DigitalDesing ---------------------------------}
 function TFrmDic.DigitalDesing(strDigitalValue: string): string;
 var i: SmallInt;
     s: string;
@@ -184,7 +207,7 @@ begin
   UpdateStusBar;
 end;
 
-procedure TFrmDic.GetCoutDic(X: Integer);
+procedure TFrmDic.GetCountDic(X: Integer);
 var
   fi : TextFile;
   BgnTime: Cardinal;
@@ -225,6 +248,23 @@ begin
 
 end;
 
+{--------------------------------- InsertItem ---------------------------------}
+function TFrmDic.InsertItem(x: integer): Integer;
+var
+  i : ShortInt;
+begin
+  With LVDic.Items.Insert(x) do
+  begin
+    Caption    := '';
+    ImageIndex := -1;
+    Caption    := IntToStr(Index + 1);
+    for i:=1 to 4 do SubItems.Add('');
+    SubItemImages[0] := 0;
+    Result  := Index;
+  end;
+end;
+
+{------------------------------- LoadDicList ----------------------------------}
 procedure TFrmDic.LoadDicList;
 var ST: TStrings;
 begin
@@ -253,7 +293,7 @@ begin
   end;
 
 end;
-
+{---------------------------- PM_CheckedSelectedClick -------------------------}
 procedure TFrmDic.PM_CheckedSelectedClick(Sender: TObject);
 var i: integer;
 begin
@@ -265,7 +305,7 @@ begin
   end;
   SaveDicList;
 end;
-
+{----------------------------- PM_DeleteClick ---------------------------------}
 procedure TFrmDic.PM_DeleteClick(Sender: TObject);
 var i: integer;
 begin
@@ -278,7 +318,59 @@ begin
   // Обовление статус бара
   UpdateStusBar;
 end;
+{------------------------------ PM_OneDownClick -------------------------------}
+procedure TFrmDic.PM_OneDownClick(Sender: TObject);
+var x, pos: SmallInt;
+begin
+  if (LVDic.Items.Count < 2) or
+     (LVDic.SelCount = 0) or
+     (LVDic.SelCount = LVDic.Items.Count) then Exit;
+  pos := LVDic.Items.Count - 1;
+  while pos > 0 do
+  begin
+    if LVDic.Items[pos].Selected then
+    begin
+      if pos < LVDic.Items.Count -1 then
+      begin
+        x := InsertItem(pos + 2);
+        CopyItem(x, pos);
+        LVDic.Items[x].Selected := true;
+        LVDic.Items.Delete(pos);
+      end;
+    end;
+    Dec(pos);
+  end;
+  for x := 0 to LVDic.Items.Count -1 do
+    LVDic.Items[x].Caption := IntToStr(x + 1);
+end;
+{---------------------------- PM_OneUpClick -----------------------------------}
+procedure TFrmDic.PM_OneUpClick(Sender: TObject);
+var
+  x, pos: SmallInt;
+begin
+  if (LVDic.Items.Count < 2) or
+     (LVDic.SelCount = 0) or
+     (LVDic.SelCount = LVDic.Items.Count) then Exit;
+  pos := 0;
+  while Pos < LVDic.Items.Count do
+  begin
+    if LVDic.Items[pos].Selected then
+    begin
+      if pos > 0 then
+      begin
+        x := InsertItem(pos-1);
+        CopyItem(x, pos + 1);
+        LVDic.Items[x].Selected := true;
+        LVDic.Items.Delete(pos + 1);
+      end;
+    end;
+    Inc(pos);
+  end;
+  for x:=0 to LVDic.Items.Count -1 do
+    LVDic.Items[x].Caption := IntToStr(x + 1);
+end;
 
+{---------------------- PM_UnCheckedSelectedClick -----------------------------}
 procedure TFrmDic.PM_UnCheckedSelectedClick(Sender: TObject);
 begin
   if LVDic.Items.Count = 0 then Exit;
@@ -290,6 +382,67 @@ begin
   SaveDicList;
 end;
 
+{-------------------------- PM_PageDownClick ----------------------------------}
+procedure TFrmDic.PM_PageDownClick(Sender: TObject);
+var
+  x, sl_count, pos: SmallInt;
+begin
+  if (LVDic.Items.Count < 2) or
+     (LVDic.SelCount = 0) or
+     (LVDic.SelCount = LVDic.Items.Count) then Exit;
+  pos      := 0;
+  sl_count := 0;
+  while pos < ((LVDic.Items.Count) - sl_count) do
+  begin
+    if LVDic.Items[pos].Selected then
+    begin
+      inc(sl_count);
+      if pos = LVDic.Items.Count -1 then
+      begin
+        inc(pos);
+        Continue;
+      end;
+      x := AddItems;
+      CopyItem(x, pos);
+      LVDic.Items[x].Selected := true;
+      LVDic.Items.Delete(pos);
+      Continue;
+    end;
+    inc(pos);
+  end;
+  for x := 0 to LVDic.Items.Count -1 do
+    LVDic.Items[x].Caption := IntToStr(x + 1);
+end;
+{-------------------------- PM_PageUpClick ------------------------------------}
+procedure TFrmDic.PM_PageUpClick(Sender: TObject);
+var
+  x, pos, sl_count: SmallInt;
+begin
+  if (LVDic.Items.Count < 2) or
+     (LVDic.SelCount = 0) or
+     (LVDic.SelCount = LVDic.Items.Count) then Exit;
+  pos      := 0;
+  sl_count := 0; //LVDic.SelCount;
+  while pos < LVDic.Items.Count do
+  begin
+    if LVDic.Items[pos].Selected then
+    begin
+      if pos = 0 then
+      begin
+        inc(pos);
+        continue;
+      end;
+      x :=  InsertItem(0 + sl_count);
+      CopyItem(x, pos + 1);
+      LVDic.Items.Delete(pos + 1);
+      inc(sl_count);
+    end;
+    Inc(pos);
+  end;
+  for x := 0 to LVDic.Items.Count -1 do
+    LVDic.Items[x].Caption := IntToStr(x + 1);
+end;
+{------------------------------ SaveDicList -----------------------------------}
 procedure TFrmDic.SaveDicList;
 begin
   INI := TIniFile.Create(CurPath + FileDicLis);
@@ -306,7 +459,7 @@ begin
     INI.Free;
   end;
 end;
-
+{------------------------------ UnblockControls -------------------------------}
 procedure TFrmDic.UnblockControls;
 begin
   BtnAdd.Enabled               := true;
@@ -315,7 +468,7 @@ begin
   PM_CheckedSelected.Enabled   := true;
   PM_UnCheckedSelected.Enabled := true;
 end;
-
+{------------------------------- UpDateStatus ---------------------------------}
 procedure TFrmDic.UpDateStatus;
 var i: SmallInt;
 begin
@@ -327,7 +480,7 @@ begin
       if GetFileSizeFormat(LVDic.Items[i].SubItems[dlv_file]) <> LVDic.Items[i].SubItems[dlv_sz] then
       begin
         LVDic.Items[i].SubItems[dlv_sz]  := GetFileSizeFormat(LVDic.Items[i].SubItems[dlv_file]);
-        GetCoutDic(i)
+        GetCountDic(i)
         //LVDic.Items[i].SubItems[dlv_cnt] := IntToStr(GetCoutDic(LVDic.Items[i].SubItems[dlv_file]));
       end;
     end
@@ -336,9 +489,8 @@ begin
       LVDic.Items[i].SubItems[dlv_stat] := strArrDicStats[dsNoFind];
     end;
   end;
-
 end;
-
+{-------------------------------- UpdateStusBar -------------------------------}
 procedure TFrmDic.UpdateStusBar;
 var
   wd_count: integer;

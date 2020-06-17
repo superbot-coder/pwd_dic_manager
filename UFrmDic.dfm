@@ -285,8 +285,9 @@ object FrmDic: TFrmDic
     Top = 8
   end
   object PopMenu: TPopupMenu
-    Left = 432
-    Top = 192
+    Images = ImageList
+    Left = 424
+    Top = 184
     object PM_CheckedSelected: TMenuItem
       Caption = #1054#1090#1084#1077#1090#1080#1090#1100' '#1075#1072#1083#1086#1095#1082#1080' '#1075#1076#1077' '#1074#1099#1076#1077#1083#1077#1085#1086
       OnClick = PM_CheckedSelectedClick
@@ -301,6 +302,25 @@ object FrmDic: TFrmDic
     object PM_Delete: TMenuItem
       Caption = #1059#1076#1072#1083#1080#1090#1100' '#1080#1079' '#1089#1087#1080#1089#1082#1072
       OnClick = PM_DeleteClick
+    end
+    object PM_Spliter2: TMenuItem
+      Caption = '-'
+    end
+    object PM_OneUp: TMenuItem
+      Caption = #1053#1072' '#1086#1076#1085#1091' '#1087#1086#1079#1080#1094#1080#1102' '#1074#1074#1077#1088#1093
+      OnClick = PM_OneUpClick
+    end
+    object PM_OneDown: TMenuItem
+      Caption = #1053#1072' '#1086#1076#1085#1091' '#1087#1086#1079#1080#1094#1080#1102' '#1074#1085#1080#1079
+      OnClick = PM_OneDownClick
+    end
+    object PM_PageUp: TMenuItem
+      Caption = #1055#1077#1088#1077#1084#1077#1089#1090#1080#1090#1100' '#1074' '#1085#1072#1095#1072#1083#1086' '#1089#1087#1080#1089#1082#1072
+      OnClick = PM_PageUpClick
+    end
+    object PM_PageDown: TMenuItem
+      Caption = #1055#1077#1088#1077#1084#1077#1089#1090#1080#1090#1100' '#1074' '#1082#1086#1085#1077#1094' '#1089#1087#1080#1089#1082#1072
+      OnClick = PM_PageDownClick
     end
   end
 end

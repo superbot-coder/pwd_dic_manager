@@ -1,4 +1,4 @@
-unit UFrmFilters;
+﻿unit UFrmFilters;
 
 interface
 
